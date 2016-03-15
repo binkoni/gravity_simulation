@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+</head>
+<body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.9/pixi.min.js"></script>
+<script>
+function prepareWorld(width, height, ball) {
+    var world = {};
+    world.width = width;
+    world.height = height;
+    world.ball = ball;
+    world.ceilingHeight = 10;
+    world.ceilingY = 0 + world.ball.radius + world.ceilingHeight;
+    world.floorHeight = 10;
+    world.floorY = world.height - world.ball.radius - world.floorHeight;
+    world.FRICTION_ACCELERATION = 0.05;
+    world.GRAVITY_ACCELERATION = 0.98;
+    world.frictionAcceleration = world.FRICTION_ACCELERATION;
+    world.gravityAcceleration = world.GRAVITY_ACCELERATION;
+
+    world.processGravity = function() {
+        this.ball.acceleration.y += this.gravityAcceleration;
+    };
+
+    world.processCollisions = function() {
+
+        if(ball.position.x < 0 + ball.radius) {
+            ball.position.x = 0 + ball.radius;
+            this.ball.acceleration.x = 0;
+            ball.velocity.x *= -1;
+            if(world.gravityAcceleration != 0) this.ball.velocity.x *= world.gravityAcceleration / 2;
+        }
+
+        if(ball.position.x > this.width - ball.radius) {
+            ball.position.x = this.width - ball.radius;
+            this.ball.acceleration.x = 0;
+            ball.velocity.x *= -1;
+            if(world.gravityAcceleration != 0) this.ball.velocity.x *= world.gravityAcceleration / 2;
+        }
+
+        if(this.ball.position.y <= this.ceilingY) {
+            this.ball.position.y = this.ceilingY;
+            this.ball.acceleration.y = 0;
+            this.ball.velocity.y *= -1;
+            if(world.gravityAcceleration != 0) this.ball.velocity.y *= world.gravityAcceleration / 2;
+        } 
+
+        if(this.ball.position.y >= this.floorY) {
+            this.ball.position.y = this.floorY;
+            this.ball.acceleration.y = 0;
+            this.ball.velocity.y *= -1;
+            if(world.gravityAcceleration != 0) this.ball.velocity.y *= world.gravityAcceleration / 2;
+        }
+    };
+
+    world.processFriction = function() {
+        if(ball.velocity.x > 0) {
+            if(ball.velocity.x < this.frictionAcceleration) {
+                ball.acceleration.x = 0;
+                ball.velocity.x = 0;
+            } else ball.acceleration.x = -this.frictionAcceleration;
+        }
+        if(ball.velocity.x < 0) {
+            if(ball.velocity.x > -this.frictionAcceleration) {
+                ball.acceleration.x = 0;
+                ball.velocity.x = 0;
+            } else ball.acceleration.x = this.frictionAcceleration;
+        }
+
+        if(ball.velocity.y > 0) {
+            if(ball.velocity.y < this.frictionAcceleration) {
+                ball.acceleration.y = 0;
+                ball.velocity.y = 0;
+            } else ball.acceleration.y = -this.frictionAcceleration;
+        }
+        if(ball.velocity.y < 0) {
+            if(ball.velocity.y > -this.frictionAcceleration) {
+                ball.acceleration.y = 0;
+                ball.velocity.y = 0;
+            } else ball.acceleration.y = this.frictionAcceleration;
+        }
+
+    };
+
+    return world;
+}
+
+function prepareBall(renderer, sceneRoot) {
+    var ballGraphics = new PIXI.Graphics();
+    ballGraphics.beginFill(0xFCAD0F);
+    ballGraphics.drawCircle(50, 50, 50);
+    ballGraphics.endFill();
+    var ballTexture = new PIXI.RenderTexture(renderer, 100, 100);
+    ballTexture.render(ballGraphics);
+    var ball = new PIXI.Sprite(ballTexture);
+    ball.anchor.x = 0.5;
+    ball.anchor.y = 0.5;
+    ball.position.x = 200;
+    ball.position.y = 200;
+    ball.acceleration = {};
+    ball.velocity = {};
+    ball.acceleration.x = 0;
+    ball.velocity.x = 0;
+    ball.acceleration.y = 0;
+    ball.velocity.y = 0;
+    ball.event = {};
+    ball.event.up = false;
+    ball.event.down = false;
+    ball.event.left = false;
+    ball.event.right = false;
+    ball.event.f = false;
+    ball.event.g = false;
+    ball.radius = 50;
+    ball.update = function() {
+        ball.velocity.x += ball.acceleration.x;
+        ball.position.x += ball.velocity.x;
+        ball.velocity.y += ball.acceleration.y;
+        ball.position.y += ball.velocity.y;
+    };
+    sceneRoot.addChild(ball);
+    return ball;
+}
+
+function prepareStatus(sceneRoot) {
+    var status = {};
+    status.title = new PIXI.Text("<기초물리실험(1) 4조>");
+    status.world = {};
+    status.world.frictionAcceleration = new PIXI.Text("");
+    status.world.gravityAcceleration = new PIXI.Text("");
+    status.ball = {};
+    status.ball.acceleration = {};
+    status.ball.acceleration.x = new PIXI.Text("");
+    status.ball.acceleration.y = new PIXI.Text("");
+    status.ball.velocity = {};
+    status.ball.velocity.x = new PIXI.Text("");
+    status.ball.velocity.y = new PIXI.Text("");
+    status.ball.position = {};
+    status.ball.position.x = new PIXI.Text("");
+    status.ball.position.y = new PIXI.Text("");
+
+    status.world.frictionAcceleration.y = status.world.frictionAcceleration.height * 0; 
+    status.world.gravityAcceleration.y = status.world.gravityAcceleration.height * 1; 
+    status.ball.acceleration.x.y = status.ball.acceleration.x.height * 2;
+    status.ball.acceleration.y.y = status.ball.acceleration.y.height * 3;
+    status.ball.velocity.x.y = status.ball.velocity.x.height * 4;
+    status.ball.velocity.y.y = status.ball.velocity.y.height * 5;
+    status.ball.position.x.y = status.ball.position.x.height * 6;
+    status.ball.position.y.y = status.ball.position.y.height * 7;
+    status.title.position.y = status.title.height * 8;
+
+    sceneRoot.addChild(status.world.frictionAcceleration);
+    sceneRoot.addChild(status.world.gravityAcceleration);
+    sceneRoot.addChild(status.ball.acceleration.x);
+    sceneRoot.addChild(status.ball.acceleration.y);
+    sceneRoot.addChild(status.ball.velocity.x);
+    sceneRoot.addChild(status.ball.velocity.y);
+    sceneRoot.addChild(status.ball.position.x);
+    sceneRoot.addChild(status.ball.position.y);
+    sceneRoot.addChild(status.title);
+    return status;
+}
+
+(function() {
+    var renderer = PIXI.autoDetectRenderer(1080, 720, {backgroundColor : 0x3486B6});
+    document.body.appendChild(renderer.view);
+    var sceneRoot = new PIXI.Container();
+    var ball = prepareBall(renderer, sceneRoot);
+    var world = prepareWorld(renderer.width, renderer.height, ball);
+    var status = prepareStatus(sceneRoot);
+    
+    function update() {
+        if(ball.event.up == true) {
+            ball.acceleration.y = -1;
+        }
+        if(ball.event.down == true) {
+            ball.acceleration.y = 1;
+        }
+        if(ball.event.left == true) {
+            ball.acceleration.x = -1;
+        }
+        if(ball.event.right == true) {
+            ball.acceleration.x = 1;
+        }
+
+        if(ball.event.f) {
+            ball.event.f = false;
+            if(world.frictionAcceleration == 0) world.frictionAcceleration = 0.05;
+            else world.frictionAcceleration = 0;
+        }
+
+        if(ball.event.g) {
+            ball.event.g = false;
+            if(world.gravityAcceleration == 0) world.gravityAcceleration = 0.95;
+            else world.gravityAcceleration = 0;
+        }
+
+        ball.update();
+        world.processFriction();
+        world.processCollisions();
+        world.processGravity();
+
+        status.world.frictionAcceleration.text = "world.frictionAcceleration: " + world.frictionAcceleration + "(press f to toggle)";
+        status.world.gravityAcceleration.text = "world.gravityAcceleration: " + world.gravityAcceleration + "(press g to toggle)";
+        status.ball.acceleration.x.text = "ball.acceleration.x: " + ball.acceleration.x;
+        status.ball.acceleration.y.text = "ball.acceleration.y: " + ball.acceleration.y;
+        status.ball.velocity.x.text = "ball.velocity.x: " + ball.velocity.x;
+        status.ball.velocity.y.text = "ball.velocity.y: " + ball.velocity.y;
+        status.ball.position.x.text = "ball.position.x: " + ball.position.x;
+        status.ball.position.y.text = "ball.position.y: " + ball.position.y;
+    }
+
+    document.addEventListener("keydown", function(keyEvent) {
+        switch(keyEvent.keyCode) {
+            case 38:
+                ball.event.up = true;
+                break;
+            case 40:
+                ball.event.down = true;
+                break;
+            case 37:
+                ball.event.left = true;
+                break;
+            case 39:
+                ball.event.right = true;
+                break;
+            case 70:
+                ball.event.f = true;
+                break;
+            case 71:
+                ball.event.g = true;
+                break;
+        }
+    });
+
+    document.addEventListener("keyup", function(keyEvent) {
+        switch(keyEvent.keyCode) {
+            case 38:
+                ball.event.up = false;
+                break;
+            case 40:
+                ball.event.down = false;
+                break;
+            case 37:
+                ball.event.left = false;
+                break;
+            case 39:
+                ball.event.right = false;
+                break;
+        }
+    });
+
+    (function animate() {
+        requestAnimationFrame(animate);
+        update();
+        renderer.render(sceneRoot);
+    })();
+})();
+</script>
+</body>
+</html>

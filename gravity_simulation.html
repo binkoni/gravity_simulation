@@ -1,91 +1,79 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8"/>
-</head>
-<body>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.9/pixi.min.js"></script>
-<script>
-function prepareWorld(width, height, ball) {
-    var world = {};
-    world.width = width;
-    world.height = height;
-    world.ball = ball;
-    world.ceilingHeight = 10;
-    world.ceilingY = 0 + world.ball.radius + world.ceilingHeight;
-    world.floorHeight = 10;
-    world.floorY = world.height - world.ball.radius - world.floorHeight;
-    world.FRICTION_ACCELERATION = 0.05;
-    world.GRAVITY_ACCELERATION = 0.98;
-    world.frictionAcceleration = world.FRICTION_ACCELERATION;
-    world.gravityAcceleration = world.GRAVITY_ACCELERATION;
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.9/pixi.min.js"></script><script>
 
-    world.processGravity = function() {
-        this.ball.acceleration.y += this.gravityAcceleration;
-    };
-
-    world.processCollisions = function() {
-
-        if(ball.position.x < 0 + ball.radius) {
-            ball.position.x = 0 + ball.radius;
-            this.ball.acceleration.x = 0;
-            ball.velocity.x *= -1;
-            if(world.gravityAcceleration != 0) this.ball.velocity.x *= world.gravityAcceleration / 2;
-        }
-
-        if(ball.position.x > this.width - ball.radius) {
-            ball.position.x = this.width - ball.radius;
-            this.ball.acceleration.x = 0;
-            ball.velocity.x *= -1;
-            if(world.gravityAcceleration != 0) this.ball.velocity.x *= world.gravityAcceleration / 2;
-        }
-
-        if(this.ball.position.y <= this.ceilingY) {
-            this.ball.position.y = this.ceilingY;
-            this.ball.acceleration.y = 0;
-            this.ball.velocity.y *= -1;
-            if(world.gravityAcceleration != 0) this.ball.velocity.y *= world.gravityAcceleration / 2;
-        } 
-
-        if(this.ball.position.y >= this.floorY) {
-            this.ball.position.y = this.floorY;
-            this.ball.acceleration.y = 0;
-            this.ball.velocity.y *= -1;
-            if(world.gravityAcceleration != 0) this.ball.velocity.y *= world.gravityAcceleration / 2;
-        }
-    };
-
-    world.processFriction = function() {
-        if(ball.velocity.x > 0) {
-            if(ball.velocity.x < this.frictionAcceleration) {
-                ball.acceleration.x = 0;
-                ball.velocity.x = 0;
-            } else ball.acceleration.x = -this.frictionAcceleration;
-        }
-        if(ball.velocity.x < 0) {
-            if(ball.velocity.x > -this.frictionAcceleration) {
-                ball.acceleration.x = 0;
-                ball.velocity.x = 0;
-            } else ball.acceleration.x = this.frictionAcceleration;
-        }
-
-        if(ball.velocity.y > 0) {
-            if(ball.velocity.y < this.frictionAcceleration) {
-                ball.acceleration.y = 0;
-                ball.velocity.y = 0;
-            } else ball.acceleration.y = -this.frictionAcceleration;
-        }
-        if(ball.velocity.y < 0) {
-            if(ball.velocity.y > -this.frictionAcceleration) {
-                ball.acceleration.y = 0;
-                ball.velocity.y = 0;
-            } else ball.acceleration.y = this.frictionAcceleration;
-        }
-
-    };
-
-    return world;
+function World(width, height, ball) {
+    this.width = width;
+    this.height = height;
+    this.ball = ball;
+    this.ceilingHeight = 10;
+    this.ceilingY = 0 + this.ball.radius + this.ceilingHeight;
+    this.floorHeight = 10;
+    this.floorY = this.height - this.ball.radius - this.floorHeight;
+    this.FRICTION_ACCELERATION = 0.05;
+    this.GRAVITY_ACCELERATION = 0.98;
+    this.frictionAcceleration = this.FRICTION_ACCELERATION;
+    this.gravityAcceleration = this.GRAVITY_ACCELERATION;
 }
+
+World.prototype.processGravity = function() {
+    this.ball.acceleration.y += this.gravityAcceleration;
+};
+
+World.prototype.processCollisions = function() {
+    if(this.ball.position.x < 0 + this.ball.radius) {
+        this.ball.position.x = 0 + this.ball.radius;
+        this.ball.acceleration.x = 0;
+        this.ball.velocity.x *= -1;
+        if(this.gravityAcceleration != 0) this.ball.velocity.x *= this.gravityAcceleration / 2;
+    }
+
+    if(this.ball.position.x > this.width - this.ball.radius) {
+        this.ball.position.x = this.width - this.ball.radius;
+        this.ball.acceleration.x = 0;
+        this.ball.velocity.x *= -1;
+        if(this.gravityAcceleration != 0) this.ball.velocity.x *= this.gravityAcceleration / 2;
+    }
+     if(this.ball.position.y <= this.ceilingY) {
+        this.ball.position.y = this.ceilingY;
+        this.ball.acceleration.y = 0;
+        this.ball.velocity.y *= -1;
+        if(this.gravityAcceleration != 0) this.ball.velocity.y *= this.gravityAcceleration / 2;
+    } 
+     if(this.ball.position.y >= this.floorY) {
+        this.ball.position.y = this.floorY;
+        this.ball.acceleration.y = 0;
+        this.ball.velocity.y *= -1;
+        if(this.gravityAcceleration != 0) this.ball.velocity.y *= this.gravityAcceleration / 2;
+        }
+    };
+
+World.prototype.processFriction = function() {
+    if(this.ball.velocity.x > 0) {
+        if(this.ball.velocity.x < this.frictionAcceleration) {
+            this.ball.acceleration.x = 0;
+            this.ball.velocity.x = 0;
+        } else this.ball.acceleration.x = -this.frictionAcceleration;
+    }
+    if(this.ball.velocity.x < 0) {
+        if(this.ball.velocity.x > -this.frictionAcceleration) {
+            this.ball.acceleration.x = 0;
+            this.ball.velocity.x = 0;
+        } else this.ball.acceleration.x = this.frictionAcceleration;
+    }
+     if(this.ball.velocity.y > 0) {
+        if(this.ball.velocity.y < this.frictionAcceleration) {
+            this.ball.acceleration.y = 0;
+            this.ball.velocity.y = 0;
+        } else this.ball.acceleration.y = -this.frictionAcceleration;
+    }
+    if(this.ball.velocity.y < 0) {
+        if(this.ball.velocity.y > -this.frictionAcceleration) {
+            this.ball.acceleration.y = 0;
+            this.ball.velocity.y = 0;
+        } else this.ball.acceleration.y = this.frictionAcceleration;
+    }
+
+};
+
 
 function prepareBall(renderer, sceneRoot) {
     var ballGraphics = new PIXI.Graphics();
@@ -123,43 +111,42 @@ function prepareBall(renderer, sceneRoot) {
     return ball;
 }
 
-function prepareStatus(sceneRoot) {
-    var status = {};
-    status.title = new PIXI.Text("<기초물리실험(1) 4조>");
-    status.world = {};
-    status.world.frictionAcceleration = new PIXI.Text("");
-    status.world.gravityAcceleration = new PIXI.Text("");
-    status.ball = {};
-    status.ball.acceleration = {};
-    status.ball.acceleration.x = new PIXI.Text("");
-    status.ball.acceleration.y = new PIXI.Text("");
-    status.ball.velocity = {};
-    status.ball.velocity.x = new PIXI.Text("");
-    status.ball.velocity.y = new PIXI.Text("");
-    status.ball.position = {};
-    status.ball.position.x = new PIXI.Text("");
-    status.ball.position.y = new PIXI.Text("");
+function Status(sceneRoot) {
 
-    status.world.frictionAcceleration.y = status.world.frictionAcceleration.height * 0; 
-    status.world.gravityAcceleration.y = status.world.gravityAcceleration.height * 1; 
-    status.ball.acceleration.x.y = status.ball.acceleration.x.height * 2;
-    status.ball.acceleration.y.y = status.ball.acceleration.y.height * 3;
-    status.ball.velocity.x.y = status.ball.velocity.x.height * 4;
-    status.ball.velocity.y.y = status.ball.velocity.y.height * 5;
-    status.ball.position.x.y = status.ball.position.x.height * 6;
-    status.ball.position.y.y = status.ball.position.y.height * 7;
-    status.title.position.y = status.title.height * 8;
+    this.title = new PIXI.Text("<기초물리실험(1) 4조>");
+    this.world = {};
+    this.world.frictionAcceleration = new PIXI.Text("");
+    this.world.gravityAcceleration = new PIXI.Text("");
+    this.ball = {};
+    this.ball.acceleration = {};
+    this.ball.acceleration.x = new PIXI.Text("");
+    this.ball.acceleration.y = new PIXI.Text("");
+    this.ball.velocity = {};
+    this.ball.velocity.x = new PIXI.Text("");
+    this.ball.velocity.y = new PIXI.Text("");
+    this.ball.position = {};
+    this.ball.position.x = new PIXI.Text("");
+    this.ball.position.y = new PIXI.Text("");
 
-    sceneRoot.addChild(status.world.frictionAcceleration);
-    sceneRoot.addChild(status.world.gravityAcceleration);
-    sceneRoot.addChild(status.ball.acceleration.x);
-    sceneRoot.addChild(status.ball.acceleration.y);
-    sceneRoot.addChild(status.ball.velocity.x);
-    sceneRoot.addChild(status.ball.velocity.y);
-    sceneRoot.addChild(status.ball.position.x);
-    sceneRoot.addChild(status.ball.position.y);
-    sceneRoot.addChild(status.title);
-    return status;
+    this.world.frictionAcceleration.y = this.world.frictionAcceleration.height * 0; 
+    this.world.gravityAcceleration.y = this.world.gravityAcceleration.height * 1; 
+    this.ball.acceleration.x.y = this.ball.acceleration.x.height * 2;
+    this.ball.acceleration.y.y = this.ball.acceleration.y.height * 3;
+    this.ball.velocity.x.y = this.ball.velocity.x.height * 4;
+    this.ball.velocity.y.y = this.ball.velocity.y.height * 5;
+    this.ball.position.x.y = this.ball.position.x.height * 6;
+    this.ball.position.y.y = this.ball.position.y.height * 7;
+    this.title.position.y = this.title.height * 8;
+
+    sceneRoot.addChild(this.world.frictionAcceleration);
+    sceneRoot.addChild(this.world.gravityAcceleration);
+    sceneRoot.addChild(this.ball.acceleration.x);
+    sceneRoot.addChild(this.ball.acceleration.y);
+    sceneRoot.addChild(this.ball.velocity.x);
+    sceneRoot.addChild(this.ball.velocity.y);
+    sceneRoot.addChild(this.ball.position.x);
+    sceneRoot.addChild(this.ball.position.y);
+    sceneRoot.addChild(this.title);
 }
 
 (function() {
@@ -167,8 +154,8 @@ function prepareStatus(sceneRoot) {
     document.body.appendChild(renderer.view);
     var sceneRoot = new PIXI.Container();
     var ball = prepareBall(renderer, sceneRoot);
-    var world = prepareWorld(renderer.width, renderer.height, ball);
-    var status = prepareStatus(sceneRoot);
+    var world = new World(renderer.width, renderer.height, ball);
+    var status = new Status(sceneRoot);
     
     function update() {
         if(ball.event.up == true) {
@@ -258,5 +245,3 @@ function prepareStatus(sceneRoot) {
     })();
 })();
 </script>
-</body>
-</html>

@@ -129,7 +129,6 @@ inherit(Ball, PIXI.Sprite);
 
 function Status(sceneRoot) {
 
-    this.title = new PIXI.Text("<기초물리실험(1) 4조>");
     this.world = {};
     this.world.frictionAcceleration = new PIXI.Text("");
     this.world.gravityAcceleration = new PIXI.Text("");
@@ -152,7 +151,6 @@ function Status(sceneRoot) {
     this.ball.velocity.y.y = this.ball.velocity.y.height * 5;
     this.ball.position.x.y = this.ball.position.x.height * 6;
     this.ball.position.y.y = this.ball.position.y.height * 7;
-    this.title.position.y = this.title.height * 8;
 
     sceneRoot.addChild(this.world.frictionAcceleration);
     sceneRoot.addChild(this.world.gravityAcceleration);
@@ -162,7 +160,6 @@ function Status(sceneRoot) {
     sceneRoot.addChild(this.ball.velocity.y);
     sceneRoot.addChild(this.ball.position.x);
     sceneRoot.addChild(this.ball.position.y);
-    sceneRoot.addChild(this.title);
 }
 
 (function() {
